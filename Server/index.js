@@ -2,14 +2,22 @@ const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config("./.env");
 const dbConnect = require("./dbConnect");
-
+const userRouter = require("./routers/userRouter");
 const authRouter = require("./routers/authRouter");
 const postRouter = require("./routers/postRouter");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const userRouter = require("./routers/userRouter");
+const cloudinary = require("cloudinary").v2;
+
 const app = express();
+
+// Configuration
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 //middleware
 app.use(
@@ -19,7 +27,7 @@ app.use(
   })
 );
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(morgan("combined"));
 app.use(cookieParser());
 

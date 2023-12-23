@@ -1,7 +1,11 @@
+const router = require("express").Router();
 const requireUser = require("../middlewares/requireUser");
 const UserController = require("../controllers/userController");
-const router = require("express").Router();
 
+router.get("/getMyInfo", requireUser, UserController.getMyInfo);
+
+router.put("/", requireUser, UserController.updateUserProfile);
+router.post("/getUserProfile", requireUser, UserController.getUserProfile);
 router.post(
   "/follow",
   requireUser,
