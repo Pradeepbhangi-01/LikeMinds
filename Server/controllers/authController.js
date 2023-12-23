@@ -5,8 +5,8 @@ const { error, success } = require("../utils/responseWrapper");
 
 const signupController = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { name, email, password } = req.body;
+    if (!email || !password || !name) {
       return res.send(error(400, "All fields are required"));
     }
 
@@ -17,6 +17,7 @@ const signupController = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
+      name,
       email,
       password: hashedPassword,
     });
@@ -28,6 +29,7 @@ const signupController = async (req, res) => {
     );
   } catch (error) {
     console.log("error while creating the user", error);
+    return res.send(error(500, e.message));
   }
 };
 
@@ -39,7 +41,7 @@ const loginController = async (req, res) => {
       return res.send(error(400, "required all fields"));
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.send(error(404, "User not registered"));
     }
@@ -63,7 +65,19 @@ const loginController = async (req, res) => {
 
     return res.send(success(200, { accessToken }));
   } catch (e) {
-    console.log("Error while signing in", e);
+    return res.send(error(500, e.message));
+  }
+};
+
+const logoutController = async (req, res) => {
+  try {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: true,
+    });
+    return res.send(success(200, "user logged out"));
+  } catch (e) {
+    return res.send(error(500, e.message));
   }
 };
 
@@ -80,11 +94,11 @@ const generateAccessToken = (data) => {
 
 // Generate refresh token
 const generaterefreshToken = (data) => {
-  const refToken = jwt.sign(data, process.env.REFRESH_TOKEN_PRIVATE_KEY, {
+  const token = jwt.sign(data, process.env.REFRESH_TOKEN_PRIVATE_KEY, {
     expiresIn: "1y",
   });
-  console.log(refToken);
-  return refToken;
+  console.log(token);
+  return token;
 };
 
 // To check the validity of refresh token and generate the accesstoken
@@ -119,4 +133,5 @@ module.exports = {
   signupController,
   loginController,
   refreshTokenConntroller,
+  logoutController,
 };

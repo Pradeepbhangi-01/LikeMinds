@@ -2,12 +2,14 @@ const express = require("express");
 const dotenv = require("dotenv");
 dotenv.config("./.env");
 const dbConnect = require("./dbConnect");
-const app = express();
+
 const authRouter = require("./routers/authRouter");
 const postRouter = require("./routers/postRouter");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+const userRouter = require("./routers/userRouter");
+const app = express();
 
 //middleware
 app.use(
@@ -24,6 +26,7 @@ app.use(cookieParser());
 // routes
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);
+app.use("/user", userRouter);
 
 app.get("/", (req, res) => {
   res.status(200).send("Wlecome to server of LikeMinds");
