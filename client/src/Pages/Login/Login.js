@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import "./Login.scss";
 import { Link, useNavigate } from "react-router-dom";
+import "./Login.scss";
 import { axiosClient } from "../../utils/axiosClient";
 import { KEY_ACCESS_TOKEN, setItem } from "../../utils/localStorageManager";
 
@@ -12,16 +12,18 @@ function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      const result = await axiosClient.post("/auth/login", {
+      const response = await axiosClient.post("/auth/login", {
         email,
         password,
       });
-      setItem(KEY_ACCESS_TOKEN, result.accessToken);
+
+      setItem(KEY_ACCESS_TOKEN, response.result.accessToken);
       navigate("/");
     } catch (error) {
       console.log(error);
     }
   }
+
   return (
     <div className="Login">
       <div className="login-box">
@@ -46,7 +48,7 @@ function Login() {
           <input type="submit" className="submit" />
         </form>
         <p className="subheading">
-          Do not have an account? <Link to="/signup">Sign up</Link>
+          Do not have an account? <Link to="/signup">Sign Up</Link>
         </p>
       </div>
     </div>
