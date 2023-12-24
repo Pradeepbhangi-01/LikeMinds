@@ -14,4 +14,7 @@ const error = (statusCode, message) => {
   };
 };
 
-module.exports = { success, error };
+module.exports = {
+  success,
+  error,
+};
